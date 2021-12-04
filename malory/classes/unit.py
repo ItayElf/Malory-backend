@@ -31,4 +31,3 @@ class Unit:
     ranged_ap: int
     attributes: List[Attribute]
     idx: int = -1
-
