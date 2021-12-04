@@ -31,3 +31,9 @@ class Unit:
     ranged_ap: int
     attributes: List[Attribute]
     idx: int = -1
+
+    def to_dict(self):
+        return {
+            **self.__dict__,
+            "attributes": [attr.to_dict() for attr in self.attributes]
+        }

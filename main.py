@@ -3,10 +3,8 @@ from settings import VERSION
 
 app = Flask(__name__)
 
-
-@app.route("/api/version/")
-def version_api():
-    return VERSION
+# imports all api endpoints
+from endpoints.api import *
 
 
 if __name__ == '__main__':

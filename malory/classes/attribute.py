@@ -7,3 +7,6 @@ class Attribute:
     name: str
     description: str
     idx: int = -1
+
+    def to_dict(self):
+        return self.__dict__
