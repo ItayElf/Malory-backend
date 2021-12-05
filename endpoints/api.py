@@ -35,7 +35,8 @@ def has_attribute_api(attr_name):
     if "full" in request.args:
         full = request.args.get("full") == "true"
     units = get_all_units()
-    return json.dumps([(unit.name if not full else unit.to_dict()) for unit in units if unit.has_attribute(attr_name)], indent=4)
+    return json.dumps([(unit.name if not full else unit.to_dict()) for unit in units if unit.has_attribute(attr_name)],
+                      indent=4)
 
 
 # --- UNITS ---
@@ -52,6 +53,24 @@ def unit_api(unit_name):
         return json.dumps(unit.to_dict(), indent=4)
     except AttributeError:
         abort(404)
+
+
+@app.route("/api/categories")
+def categories_api():
+    playable = True
+    if "playable" in request.args:
+        playable = request.args.get("playable") != "false"
+    categories = list({u.category for u in get_all_units()})
+    if playable:
+        categories.remove("Special")
+    return json.dumps(categories, indent=4)
+
+
+@app.route("/api/nations")
+def nations_api():
+    ignore = ["Medium", "Heavy", "Light", "Special"]
+    nations = list({u.category for u in get_all_units() if all([s not in u.category for s in ignore])})
+    return json.dumps(nations, indent=4)
 
 
 # --- USERS ---
