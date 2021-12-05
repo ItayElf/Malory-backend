@@ -1,8 +1,9 @@
 import json
-from flask import abort
+from flask import abort, request
 from main import app
 from malory.orm.attribute_orm import get_all_attributes, get_attribute
 from malory.orm.unit_orm import get_all_units, get_unit
+from malory.orm.user_orm import verify_user
 from settings import VERSION
 
 
@@ -42,3 +43,13 @@ def unit_api(unit_name):
         return json.dumps(unit.to_dict(), indent=4)
     except AttributeError:
         abort(404)
+
+
+# --- USERS ---
+@app.route("/api/verify")
+def verify_api():
+    if "username" not in request.args or "password" not in request.args:
+        abort(400)
+    username = request.args.get("username")
+    password = request.args.get("password")
+    return json.dumps(verify_user(username, password))
