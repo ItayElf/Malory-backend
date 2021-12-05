@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from malory.classes.attribute import Attribute
-from typing import List
+from typing import List, Union
 
 
 @dataclass
@@ -37,3 +37,10 @@ class Unit:
             **self.__dict__,
             "attributes": [attr.to_dict() for attr in self.attributes]
         }
+
+    def has_attribute(self, attr: Union[str, Attribute]) -> bool:
+        """Returns true if a unit has the given attribute"""
+        if isinstance(attr, Attribute):
+            attr = attr.name
+        return any([a.name == attr for a in self.attributes])
+

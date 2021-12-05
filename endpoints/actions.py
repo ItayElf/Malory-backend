@@ -4,7 +4,7 @@ from main import app
 from malory.orm.user_orm import register_user
 
 
-@app.route("/action/register/", methods=["POST"])
+@app.route("/action/register", methods=["POST"])
 def register_action():
     if "username" not in request.form or "password" not in request.form:
         abort(400)
