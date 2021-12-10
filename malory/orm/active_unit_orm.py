@@ -84,9 +84,9 @@ def get_player(username: str) -> Player:
         if not tup:
             raise AttributeError(f"No player found with username {username}")
         idx = tup[1]
-        idxs, names, mens, morales, ammos = map(lambda x: x.split(","), tup[2:])
         lst = []
-        if idxs:
+        if tup[2]:
+            idxs, names, mens, morales, ammos = map(lambda x: x.split(","), tup[2:])
             lst = [ActiveUnit(name, men, morale, ammo, index) for (name, men, morale, ammo, index) in
                    zip(names, mens, morales, ammos, idxs)]
         return Player(lst, idx)
