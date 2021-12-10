@@ -1,8 +1,6 @@
 import sqlite3
 from hashlib import md5
 
-import flask
-
 from settings import DB_LOCATION
 from string import ascii_letters, digits
 from random import choice
@@ -11,7 +9,7 @@ from random import choice
 def register_user(username: str, password: str) -> bool:
     """Registers a user to the database, returns true if successful"""
     pool = ascii_letters + digits
-    salt = "".join([choice(pool) for i in range(8)])
+    salt = "".join([choice(pool) for _ in range(8)])
     hashed = md5((password + salt).encode()).hexdigest()
     with sqlite3.connect(DB_LOCATION) as conn:
         try:

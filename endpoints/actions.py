@@ -1,7 +1,7 @@
 import json
 from flask import abort, request
 from main import app
-from malory.orm.active_unit_orm import add_active_unit, get_active_unit, active_unit_owner, delete_active_unit
+from malory.orm.active_unit_orm import add_active_unit, active_unit_owner, delete_active_unit
 from malory.orm.user_orm import register_user, verify_user, get_user_idx
 
 

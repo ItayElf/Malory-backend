@@ -1,5 +1,4 @@
 from flask import Flask
-from settings import VERSION
 
 app = Flask(__name__)
 

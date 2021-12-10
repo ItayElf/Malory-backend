@@ -16,7 +16,7 @@ GROUP BY u.username;"""
 def add_active_unit(unit_name: str, player_id: int) -> bool:
     """Adds an active unit to a player's army, returning true if the insertion was successful"""
     try:
-        unit = ActiveUnit.active_unit_from_datasheet(get_unit(unit_name))
+        unit = ActiveUnit.from_datasheet(get_unit(unit_name))
         with sqlite3.connect(DB_LOCATION) as conn:
             c = conn.cursor()
             c.execute("SELECT * FROM users WHERE id=?", (player_id,))
@@ -54,6 +54,19 @@ def delete_active_unit(idx: int) -> bool:
         return True
 
 
+def update_active_unit(unit: ActiveUnit) -> bool:
+    """Updates the active unit with the same index to match the given one, returning True if successful"""
+    with sqlite3.connect(DB_LOCATION) as conn:
+        c = conn.cursor()
+        c.execute("SELECT * FROM active_units WHERE id=?", (unit.idx,))
+        if not c.fetchone():
+            return False
+        conn.execute("UPDATE active_units SET men=?, morale=?, ammunition=? WHERE id=?",
+                     (unit.men, unit.morale, unit.ammunition, unit.idx))
+        conn.commit()
+        return True
+
+
 def get_player_army(player_idx: int) -> List[ActiveUnit]:
     """Returns a list of all active units that a player has"""
     with sqlite3.connect(DB_LOCATION) as conn:
@@ -87,10 +100,11 @@ def get_player(username: str) -> Player:
         lst = []
         if tup[2]:
             idxs, names, mens, morales, ammos = map(lambda x: x.split(","), tup[2:])
-            lst = [ActiveUnit(name, men, morale, ammo, index) for (name, men, morale, ammo, index) in
+            lst = [ActiveUnit(name, int(men), int(morale), int(ammo), int(index)) for (name, men, morale, ammo, index) in
                    zip(names, mens, morales, ammos, idxs)]
         return Player(lst, idx)
 
 
 if __name__ == '__main__':
-    print(get_player("Itay").to_dict())
+    add_active_unit("Ambushers", 1)
+    add_active_unit("Heavy Spearmen", 2)

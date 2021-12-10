@@ -52,8 +52,3 @@ class ActiveUnit:
     def from_datasheet(cls, unit: Unit):
         return cls(unit.name, unit.men, unit.morale, unit.ammunition)
 
-
-if __name__ == '__main__':
-    unt1 = ActiveUnit.from_datasheet(get_unit("Axemen"))
-    unt2 = ActiveUnit.from_datasheet(get_unit("Heavy Spearmen"))
-    print(unt1.attack(unt2, AttackParameters()))

@@ -3,7 +3,6 @@ from dataclasses import dataclass
 from typing import List, Tuple
 from malory.classes.active_unit import ActiveUnit
 from malory.classes.attack_parameters import AttackParameters
-from malory.orm.active_unit_orm import get_player
 from malory.orm.unit_orm import get_unit
 from malory.orm.user_orm import get_user_name
 
@@ -26,6 +25,7 @@ class Player:
 
     def attack(self, unit_idx: int, username: str, other_idx: int, params: AttackParameters) -> Tuple[float, float]:
         """Resolves an attack between two units of different players"""
+        from malory.orm.active_unit_orm import get_player, update_active_unit
         lst = list(filter(lambda x: x.idx == unit_idx, self.units))
         if not lst:
             raise AttributeError(f"No unit with index {unit_idx} was found for player {get_user_name(self.idx)}")
@@ -35,6 +35,8 @@ class Player:
         if not lst:
             raise AttributeError(f"No unit with index {unit_idx} was found for player {username}")
         unt2 = lst[0]
+        if unt2.men <= 0 or unt2.morale <= 0:
+            raise ValueError("Invalid Target")
         data, other_data = unt.get_data(), unt2.get_data()
 
         damage = unt.attack(unt2, params)
@@ -45,6 +47,8 @@ class Player:
         if params.ranged:
             if unt.ammunition == 0:
                 raise ValueError("No Ammunition")
+            elif data.range == -1:
+                raise ValueError("Unit has no range")
             unt.ammunition -= 1
 
         casualties = men_before - unt2.men
@@ -54,5 +58,6 @@ class Player:
             ratio = (men_before - unt2.men) / men_before + .5
             unt2.morale -= (men_before - unt2.men) * other_data.weight * ratio * morale
             unt2.morale = max(math.ceil(unt2.morale), 0)
-        # TODO update units in DB
+        update_active_unit(unt)
+        update_active_unit(unt2)
         return damage, casualties
