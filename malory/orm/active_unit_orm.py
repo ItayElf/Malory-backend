@@ -2,8 +2,15 @@ import sqlite3
 from typing import List
 
 from malory.classes.active_unit import ActiveUnit
+from malory.classes.player import Player
 from malory.orm.unit_orm import get_unit
 from settings import DB_LOCATION
+
+get_player_sql = """SELECT u.username, u.id, group_concat(au.id), group_concat(au.name), group_concat(au.men), group_concat(au.morale), group_concat(au.ammunition)
+FROM users u
+LEFT JOIN active_units au ON au.player_id = u.id
+WHERE u.username = ?
+GROUP BY u.username;"""
 
 
 def add_active_unit(unit_name: str, player_id: int) -> bool:
@@ -66,3 +73,24 @@ def active_unit_owner(unit_idx: int) -> int:
         if not tup:
             raise AttributeError(f"No unit was found with index {unit_idx}")
         return tup[0]
+
+
+def get_player(username: str) -> Player:
+    """Returns a player object based on a username, throwing an attribute error if player does not exist"""
+    with sqlite3.connect(DB_LOCATION) as conn:
+        c = conn.cursor()
+        c.execute(get_player_sql, (username,))
+        tup = c.fetchone()
+        if not tup:
+            raise AttributeError(f"No player found with username {username}")
+        idx = tup[1]
+        idxs, names, mens, morales, ammos = map(lambda x: x.split(","), tup[2:])
+        lst = []
+        if idxs:
+            lst = [ActiveUnit(name, men, morale, ammo, index) for (name, men, morale, ammo, index) in
+                   zip(names, mens, morales, ammos, idxs)]
+        return Player(lst, idx)
+
+
+if __name__ == '__main__':
+    print(get_player("Itay").to_dict())

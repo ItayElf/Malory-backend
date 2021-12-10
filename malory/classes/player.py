@@ -17,5 +17,6 @@ class Player:
     def to_dict(self):
         return {
             "units": [u.to_dict() for u in self.units],
-            "data": [u.to_dict() for u in self.data]
+            "data": {name: u.to_dict() for name, u in self.data.items()},
+            "idx": self.idx
         }

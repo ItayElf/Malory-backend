@@ -1,7 +1,7 @@
 import json
 from flask import abort, request
 from main import app
-from malory.orm.active_unit_orm import get_active_unit
+from malory.orm.active_unit_orm import get_active_unit, get_player
 from malory.orm.attribute_orm import get_all_attributes, get_attribute
 from malory.orm.unit_orm import get_all_units, get_unit
 from malory.orm.user_orm import verify_user
@@ -82,6 +82,15 @@ def active_unit_api(idx):
         unt = get_active_unit(int(idx))
         return json.dumps(unt.to_dict(), indent=4)
     except (AttributeError, ValueError):
+        abort(404)
+
+
+@app.route("/api/player/<username>")
+def get_player_api(username):
+    try:
+        p = get_player(username)
+        return json.dumps(p.to_dict(), indent=4)
+    except AttributeError:
         abort(404)
 
 
