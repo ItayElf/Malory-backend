@@ -43,3 +43,14 @@ def get_user_idx(username: str) -> int:
         if not tup:
             raise AttributeError(f"No player named {username} was found.")
         return tup[0]
+
+
+def get_user_name(idx: int) -> str:
+    """Returns the username which correspond to the given index"""
+    with sqlite3.connect(DB_LOCATION) as conn:
+        c = conn.cursor()
+        c.execute("SELECT username FROM users WHERE id=?", (idx,))
+        tup = c.fetchone()
+        if not tup:
+            raise AttributeError(f"No player with index {idx} was found.")
+        return tup[0]
