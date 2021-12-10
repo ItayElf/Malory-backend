@@ -32,3 +32,14 @@ def verify_user(username: str, password: str) -> bool:
             return False
         hashed, salt = tup
         return md5((password + salt).encode()).hexdigest() == hashed
+
+
+def get_user_idx(username: str) -> int:
+    """Returns the user id which correspond to the given username"""
+    with sqlite3.connect(DB_LOCATION) as conn:
+        c = conn.cursor()
+        c.execute("SELECT id FROM users WHERE username=?", (username,))
+        tup = c.fetchone()
+        if not tup:
+            raise AttributeError(f"No player named {username} was found.")
+        return tup[0]

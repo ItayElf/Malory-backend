@@ -56,3 +56,13 @@ def get_player_army(player_idx: int) -> List[ActiveUnit]:
         return [ActiveUnit(name, men, morale, ammunition, idx) for (idx, name, men, morale, ammunition, player_id) in
                 lst]
 
+
+def active_unit_owner(unit_idx: int) -> int:
+    """Return player id of a unit"""
+    with sqlite3.connect(DB_LOCATION) as conn:
+        c = conn.cursor()
+        c.execute("SELECT player_id FROM active_units WHERE id=?", (unit_idx,))
+        tup = c.fetchone()
+        if not tup:
+            raise AttributeError(f"No unit was found with index {unit_idx}")
+        return tup[0]

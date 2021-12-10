@@ -1,6 +1,7 @@
 import json
 from flask import abort, request
 from main import app
+from malory.orm.active_unit_orm import get_active_unit
 from malory.orm.attribute_orm import get_all_attributes, get_attribute
 from malory.orm.unit_orm import get_all_units, get_unit
 from malory.orm.user_orm import verify_user
@@ -71,6 +72,17 @@ def nations_api():
     ignore = ["Medium", "Heavy", "Light", "Special"]
     nations = list({u.category for u in get_all_units() if all([s not in u.category for s in ignore])})
     return json.dumps(nations, indent=4)
+
+
+# --- ACTIVE UNITS ---
+
+@app.route("/api/active_unit/<idx>")
+def active_unit_api(idx):
+    try:
+        unt = get_active_unit(int(idx))
+        return json.dumps(unt.to_dict(), indent=4)
+    except (AttributeError, ValueError):
+        abort(404)
 
 
 # --- USERS ---
