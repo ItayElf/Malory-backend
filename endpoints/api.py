@@ -1,5 +1,5 @@
 import json
-from flask import abort, request
+from flask import request
 from main import app
 from malory.orm.active_unit_orm import get_active_unit, get_player
 from malory.orm.attribute_orm import get_all_attributes, get_attribute
@@ -26,8 +26,8 @@ def attribute_api(attr_name):
     try:
         attr = get_attribute(attr_name.title())
         return json.dumps(attr.to_dict(), indent=4)
-    except AttributeError:
-        abort(404)
+    except AttributeError as e:
+        return str(e), 404
 
 
 @app.route("/api/has_attribute/<attr_name>")
@@ -52,8 +52,8 @@ def unit_api(unit_name):
     try:
         unit = get_unit(unit_name.title())
         return json.dumps(unit.to_dict(), indent=4)
-    except AttributeError:
-        abort(404)
+    except AttributeError as e:
+        return str(e), 404
 
 
 @app.route("/api/categories")
@@ -81,8 +81,8 @@ def active_unit_api(idx):
     try:
         unt = get_active_unit(int(idx))
         return json.dumps(unt.to_dict(), indent=4)
-    except (AttributeError, ValueError):
-        abort(404)
+    except (AttributeError, ValueError) as e:
+        return str(e), 404
 
 
 @app.route("/api/player/<username>")
@@ -90,15 +90,15 @@ def get_player_api(username):
     try:
         p = get_player(username)
         return json.dumps(p.to_dict(), indent=4)
-    except AttributeError:
-        abort(404)
+    except AttributeError as e:
+        str(e), 404
 
 
 # --- USERS ---
 @app.route("/api/verify")
 def verify_api():
     if "username" not in request.args or "password" not in request.args:
-        abort(400)
+        return "Missing username or password in args", 400
     username = request.args.get("username")
     password = request.args.get("password")
     return json.dumps(verify_user(username, password))
