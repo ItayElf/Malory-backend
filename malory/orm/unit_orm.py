@@ -26,7 +26,7 @@ def get_unit(name: str) -> Unit:
         names, descs, idxs = tup[:3]
         lst = []
         if names:
-            lst = [Attribute(name, desc, idx) for name, desc, idx in
+            lst = [Attribute(name, desc, int(idx)) for name, desc, idx in
                    zip(names.split(","), descs.split(","), idxs.split(","))]
         data = list(tup[4:]) + [lst, tup[3]]
     return Unit(*data)
@@ -44,7 +44,7 @@ def get_all_units() -> List[Unit]:
             names, descs, idxs = tup[:3]
             lst = []
             if names:
-                lst = [Attribute(name, desc, idx) for name, desc, idx in
+                lst = [Attribute(name, desc, int(idx)) for name, desc, idx in
                        zip(names.split(","), descs.split(","), idxs.split(","))]
             data = list(tup[4:]) + [lst, tup[3]]
             res.append(Unit(*data))
