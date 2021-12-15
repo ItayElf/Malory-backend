@@ -101,4 +101,7 @@ def verify_api():
         return "Missing username or password in args", 400
     username = request.args.get("username")
     password = request.args.get("password")
-    return json.dumps(verify_user(username, password))
+    try:
+        return json.dumps(verify_user(username, password))
+    except ValueError as e:
+        return str(e), 404

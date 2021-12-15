@@ -14,8 +14,8 @@ def register_user(username: str, password: str) -> bool:
     with sqlite3.connect(DB_LOCATION) as conn:
         try:
             conn.execute("INSERT INTO users(username, password, salt) VALUES(?, ?, ?)", (username, hashed, salt))
-        except sqlite3.IntegrityError:  # username already exists
-            return False
+        except sqlite3.IntegrityError:
+            raise ValueError(f"Username {username} is already taken.")
         conn.commit()
     return True
 
@@ -27,7 +27,7 @@ def verify_user(username: str, password: str) -> bool:
         c.execute("SELECT password, salt FROM users WHERE username=?", (username,))
         tup = c.fetchone()
         if not tup:
-            return False
+            raise ValueError("Invalid username or password.")
         hashed, salt = tup
         return md5((password + salt).encode()).hexdigest() == hashed
 

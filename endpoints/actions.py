@@ -11,7 +11,10 @@ def register_action():
         return "Missing username or password in form", 400
     username = request.form.get("username")
     password = request.form.get("password")
-    return json.dumps(register_user(username, password))
+    try:
+        return json.dumps(register_user(username, password))
+    except ValueError as e:
+        return str(e), 406
 
 
 @app.route("/action/add_unit", methods=["POST"])
