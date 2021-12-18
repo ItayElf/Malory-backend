@@ -29,7 +29,9 @@ def verify_user(username: str, password: str) -> bool:
         if not tup:
             raise ValueError("Invalid username or password.")
         hashed, salt = tup
-        return md5((password + salt).encode()).hexdigest() == hashed
+        if md5((password + salt).encode()).hexdigest() == hashed:
+            return True
+        raise ValueError("Invalid username or password.")
 
 
 def get_user_idx(username: str) -> int:
