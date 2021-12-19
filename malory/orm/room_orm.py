@@ -33,10 +33,12 @@ def get_room(room_name: str) -> Room:
 def join_room(room_name: str, idx: int) -> None:
     """Adds a player to a room, throwing AttributeError if room is full or not found"""
     with sqlite3.connect(DB_LOCATION) as conn:
-        get_user_name(idx)
+        username = get_user_name(idx)
         room = get_room(room_name)
         if not not room.player2:
             raise AttributeError("Room is full")
+        if room.player1.idx == idx:
+            raise AttributeError(f"Player {username} is already in room {room.name}")
         conn.execute("UPDATE rooms SET player2_id=? WHERE name=?", (idx, room_name))
         conn.commit()
 
@@ -48,7 +50,7 @@ def create_room(room_name: str, points: int, idx: int) -> None:
         try:
             conn.execute("INSERT INTO rooms(name, points, player1_id) VALUES(?,?,?)", (room_name, points, idx))
             conn.commit()
-        except sqlite3.OperationalError:
+        except sqlite3.IntegrityError:
             raise AttributeError(f"Room name {room_name} is already taken")
 
 

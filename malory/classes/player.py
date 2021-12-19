@@ -11,6 +11,7 @@ from malory.orm.user_orm import get_user_name
 class Player:
     """Class that represents a player"""
     units: List[ActiveUnit]
+    name: str = ""
     idx: int = -1
 
     def __post_init__(self):
@@ -20,7 +21,8 @@ class Player:
         return {
             "units": [u.to_dict() for u in self.units],
             "data": {name: u.to_dict() for name, u in self.data.items()},
-            "idx": self.idx
+            "idx": self.idx,
+            "name": self.name
         }
 
     def attack(self, unit_idx: int, username: str, other_idx: int, params: AttackParameters) -> Tuple[float, float]:

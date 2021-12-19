@@ -3,6 +3,7 @@ from flask import request
 from main import app
 from malory.orm.active_unit_orm import get_active_unit, get_player
 from malory.orm.attribute_orm import get_all_attributes, get_attribute
+from malory.orm.room_orm import get_available_rooms, get_room
 from malory.orm.unit_orm import get_all_units, get_unit
 from malory.orm.user_orm import verify_user
 from settings import VERSION
@@ -104,4 +105,20 @@ def verify_api():
     try:
         return json.dumps(verify_user(username, password))
     except ValueError as e:
+        return str(e), 404
+
+
+# --- ROOMS ---
+@app.route("/api/available_rooms")
+def available_rooms_api():
+    rooms = get_available_rooms()
+    return json.dumps([room.to_dict() for room in rooms], indent=4)
+
+
+@app.route("/api/room/<room_name>")
+def room_api(room_name):
+    try:
+        room = get_room(room_name)
+        return json.dumps(room.to_dict(), indent=4)
+    except AttributeError as e:
         return str(e), 404

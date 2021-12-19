@@ -4,6 +4,7 @@ from typing import List
 from malory.classes.active_unit import ActiveUnit
 from malory.classes.player import Player
 from malory.orm.unit_orm import get_unit
+from malory.orm.user_orm import get_user_name
 from settings import DB_LOCATION
 
 get_player_sql = """SELECT u.username, u.id, group_concat(au.id), group_concat(au.name), group_concat(au.men), group_concat(au.morale), group_concat(au.ammunition)
@@ -102,9 +103,4 @@ def get_player(username: str) -> Player:
             idxs, names, mens, morales, ammos = map(lambda x: x.split(","), tup[2:])
             lst = [ActiveUnit(name, int(men), int(morale), int(ammo), int(index)) for (name, men, morale, ammo, index) in
                    zip(names, mens, morales, ammos, idxs)]
-        return Player(lst, idx)
-
-
-if __name__ == '__main__':
-    add_active_unit("Ambushers", 1)
-    add_active_unit("Heavy Spearmen", 2)
+        return Player(lst, get_user_name(idx), idx)
