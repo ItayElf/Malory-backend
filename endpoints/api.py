@@ -122,3 +122,12 @@ def room_api(room_name):
         return json.dumps(room.to_dict(), indent=4)
     except AttributeError as e:
         return str(e), 404
+
+
+@app.route("/api/is_game_ready/<room_name>")
+def is_game_ready_api(room_name):
+    try:
+        room = get_room(room_name)
+        return json.dumps(not not room.player2)
+    except AttributeError as e:
+        return str(e), 404
